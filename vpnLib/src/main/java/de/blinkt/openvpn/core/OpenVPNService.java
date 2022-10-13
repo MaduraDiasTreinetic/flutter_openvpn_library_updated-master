@@ -205,6 +205,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
         mNotificationActivityClass = activityClass;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     PendingIntent getContentIntent() {
         try {
             if (mNotificationActivityClass != null) {
@@ -219,7 +220,7 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
 
 
-                return PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                return PendingIntent.getActivity(this, 0, intent,PendingIntent.FLAG_IMMUTABLE |PendingIntent.FLAG_UPDATE_CURRENT);
             }
         } catch (Exception e) {
             Log.e(this.getClass().getCanonicalName(), "Build detail intent error", e);
@@ -342,7 +343,10 @@ public class OpenVPNService extends VpnService implements StateListener, Callbac
 
             nbuilder.setContentIntent(pIntent);
         } else {
-            PendingIntent contentPendingIntent = getContentIntent();
+            PendingIntent contentPendingIntent = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                contentPendingIntent = getContentIntent();
+            }
             if (contentPendingIntent != null) {
                 nbuilder.setContentIntent(contentPendingIntent);
             } else {
